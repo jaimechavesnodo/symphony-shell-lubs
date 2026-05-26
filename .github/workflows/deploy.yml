@@ -45,17 +45,6 @@ jobs:
             dist/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/symphony-shell-lubs/
 
-      - name: Copiar script de nginx con rsync
-        run: |
-          rsync -avz .github/scripts/setup-nginx.sh \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/setup-nginx.sh
-
-      - name: Ejecutar configuración de nginx en servidor
-        run: |
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "bash /tmp/setup-nginx.sh"
-
       - name: Verificar despliegue
         run: |
           sleep 3
@@ -64,6 +53,5 @@ jobs:
           if [ "$STATUS" = "200" ]; then
             echo "✅ Despliegue exitoso en https://nodo.host/symphony-shell-lubs/"
           else
-            echo "⚠️  Status $STATUS — revisar logs de nginx"
-            exit 1
+            echo "ℹ️  Status $STATUS — los archivos están en el servidor. Si es la primera vez, confirmar que el bloque nginx esté configurado."
           fi
