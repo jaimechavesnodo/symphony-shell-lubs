@@ -47,7 +47,7 @@ jobs:
 
       - name: Verificar despliegue
         run: |
-          sleep 3
+          sleep 8
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://nodo.host/symphony-shell-lubs/)
           echo "HTTP Status: $STATUS"
           if [ "$STATUS" = "200" ]; then
