@@ -14,6 +14,7 @@ npm install
 # 2. Iniciar servidor de desarrollo
 npm run dev
 # → http://localhost:5173
+# → http://localhost:5173
 ```
 
 ---
