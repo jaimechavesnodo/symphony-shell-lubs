@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Target, GitBranch, Bell, Calendar,
+  LayoutDashboard, Target, Filter, Bell, Calendar,
   Mail, FolderOpen, BookOpen, Trophy, Settings, LogOut
 } from 'lucide-react';
 import useAppStore from '../../store/useAppStore';
@@ -9,7 +9,7 @@ const BASE = import.meta.env.BASE_URL;
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Inicio' },
   { to: '/opportunities', icon: Target, label: 'Oportunidades' },
-  { to: '/spancop', icon: GitBranch, label: 'SPANCOP' },
+  { to: '/spancop', icon: Filter, label: 'SPANCOP' },
   { to: '/alerts', icon: Bell, label: 'Alertas', badge: true },
   { to: '/calendar', icon: Calendar, label: 'Calendario' },
   { to: '/emails', icon: Mail, label: 'Correos' },

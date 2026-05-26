@@ -330,7 +330,7 @@ function ExecutiveView({ currentUser, executives }) {
       {/* Hero */}
       {myEntry && (
         <div className="relative overflow-hidden rounded-2xl"
-          style={{ background: 'linear-gradient(135deg, #1a1200 0%, #3d2d00 40%, #7a5800 70%, #FBCE07 100%)' }}>
+          style={{ background: 'linear-gradient(135deg, #7A3800 0%, #A85200 30%, #C47800 60%, #FBCE07 100%)' }}>
           <div className="absolute inset-0 opacity-8">
             <div className="absolute top-2 right-6 text-[160px] font-black text-white/10 leading-none select-none">#{myRank}</div>
           </div>
