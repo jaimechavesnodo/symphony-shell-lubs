@@ -1,6 +1,7 @@
-import { Trophy, Star, Droplets, FileText, MapPin, Phone, Zap, TrendingUp, DollarSign, Users, ChevronUp, Crown, Award } from 'lucide-react';
+import { Trophy, Star, Droplets, FileText, MapPin, Phone, Zap, TrendingUp, DollarSign, Users, Crown, Award } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { championsData } from '../data/mockData';
+import { BADGE_SVG } from '../components/ui/BadgeSVG';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -145,68 +146,133 @@ const badgeDefs = [
 ];
 
 function BadgesSection({ entry }) {
+  const badgeRows = [
+    {
+      key: 'proposals',
+      label: 'Propuestas enviadas',
+      val: entry.proposals,
+      tiers: [
+        { tier: 'bronze', name: 'Cazador de Negocios',  min: 5,  desc: '5+ propuestas' },
+        { tier: 'silver', name: 'Cazador Élite',         min: 10, desc: '10+ propuestas' },
+        { tier: 'gold',   name: 'Depredador Comercial',  min: 15, desc: '15+ propuestas' },
+      ],
+    },
+    {
+      key: 'visits',
+      label: 'Visitas reportadas',
+      val: entry.visits,
+      tiers: [
+        { tier: 'bronze', name: 'Maratonista Comercial', min: 4,  desc: '4+ visitas' },
+        { tier: 'silver', name: 'Ultra Maratonista',     min: 8,  desc: '8+ visitas' },
+        { tier: 'gold',   name: 'Leyenda del Campo',     min: 12, desc: '12+ visitas' },
+      ],
+    },
+    {
+      key: 'contacts',
+      label: 'Primeros contactos',
+      val: entry.contacts,
+      tiers: [
+        { tier: 'bronze', name: 'Abre Puertas',          min: 8,  desc: '8+ contactos' },
+        { tier: 'silver', name: 'Conector Experto',      min: 14, desc: '14+ contactos' },
+        { tier: 'gold',   name: 'Master Networker',      min: 20, desc: '20+ contactos' },
+      ],
+    },
+    {
+      key: 'volumePct',
+      label: 'Cumplimiento volumen',
+      val: entry.volumePct,
+      tiers: [
+        { tier: 'bronze', name: 'Ejecutor',              min: 70,  desc: '70%+ de meta' },
+        { tier: 'silver', name: 'Meta Hunter',           min: 85,  desc: '85%+ de meta' },
+        { tier: 'gold',   name: 'Superestrella Shell',   min: 100, desc: '100% meta' },
+      ],
+    },
+  ];
+
+  const specialBadges = [
+    { icon: '🌟', name: 'Top 5',       desc: 'En el ranking',         earned: true },
+    { icon: '📈', name: 'Crecimiento', desc: '+15% vs mes ant.',      earned: true },
+    { icon: '🤝', name: 'Negociador',  desc: '3+ ops en Negotiate',   earned: entry.volumePct >= 80 },
+    { icon: '🏆', name: 'Campeón',     desc: 'Posición #1',           earned: false },
+    { icon: '💎', name: 'Diamante',    desc: '1.500+ XP',             earned: entry.total >= 1500 },
+  ];
+
   return (
     <div className="card p-5">
-      <h2 className="text-sm font-bold text-shell-gray-700 mb-4 flex items-center gap-2">
-        🎖️ Mis insignias
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {badgeDefs.map(def => {
-          const val = entry[def.key] || 0;
-          const earnedTier = [...def.tiers].reverse().find(t => val >= t.min);
-          const nextTier = def.tiers.find(t => val < t.min);
+      <h2 className="text-sm font-bold text-shell-gray-700 mb-5">🎖️ Mis insignias</h2>
+
+      {/* Main badge grid — 4 categories × 3 tiers */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
+        {badgeRows.map(row => {
+          const BadgeComp = BADGE_SVG[row.key];
+          const earnedTier = [...row.tiers].reverse().find(t => row.val >= t.min);
+          const nextTier = row.tiers.find(t => row.val < t.min);
+          const tierKey = earnedTier?.tier || 'locked';
+
+          const tierLabel = {
+            locked: null,
+            bronze: { text: 'BRONCE', color: '#CD7F32' },
+            silver: { text: 'PLATA',  color: '#9EA3A8' },
+            gold:   { text: 'ORO',    color: '#D4A800' },
+          }[tierKey];
 
           return (
-            <div key={def.key} className="flex flex-col items-center gap-2">
-              {/* Badge circle */}
-              <div
-                className={`w-20 h-20 rounded-full flex flex-col items-center justify-center relative transition-all duration-300 ${
-                  earnedTier
-                    ? `shadow-lg shadow-lg`
-                    : 'bg-shell-gray-100 border-2 border-dashed border-shell-gray-200'
-                }`}
-                style={earnedTier ? {
-                  background: `radial-gradient(circle at 35% 35%, white 0%, ${earnedTier.color}33 30%, ${earnedTier.color}66 100%)`,
-                  border: `3px solid ${earnedTier.color}`,
-                  boxShadow: `0 0 20px ${earnedTier.color}44`,
-                } : {}}
-              >
-                <span className={`text-3xl ${!earnedTier ? 'grayscale opacity-30' : ''}`}>{def.icon}</span>
-                {earnedTier && (
-                  <span className="text-[9px] font-black mt-0.5" style={{ color: earnedTier.color }}>
-                    {earnedTier.color === '#FFD700' ? '★ GOLD' : earnedTier.color === '#C0C0C0' ? '◆ PLATA' : '● BRONCE'}
-                  </span>
+            <div key={row.key} className="flex flex-col items-center gap-2">
+              {/* SVG Badge */}
+              <div className="relative">
+                <BadgeComp tier={tierKey} size={88} />
+                {/* Tier label pill */}
+                {tierLabel && (
+                  <div
+                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-black text-white whitespace-nowrap"
+                    style={{ background: tierLabel.color, boxShadow: `0 2px 6px ${tierLabel.color}66` }}
+                  >
+                    ★ {tierLabel.text}
+                  </div>
                 )}
-                {/* Shine effect for gold */}
-                {earnedTier?.color === '#FFD700' && (
-                  <div className="absolute top-1 right-2 text-xs">✨</div>
+                {/* Lock for unearned */}
+                {tierKey === 'locked' && (
+                  <div className="absolute bottom-0 right-0 w-6 h-6 bg-shell-gray-300 rounded-full flex items-center justify-center text-white text-xs shadow">
+                    🔒
+                  </div>
                 )}
               </div>
 
-              {/* Badge name */}
-              <div className="text-center">
-                {earnedTier ? (
-                  <>
-                    <p className="text-xs font-bold text-shell-gray-800 leading-tight">{earnedTier.name}</p>
-                    <p className="text-[10px] text-shell-gray-400 mt-0.5">{earnedTier.desc}</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-xs font-semibold text-shell-gray-400 leading-tight">{def.tiers[0].name}</p>
-                    <p className="text-[10px] text-shell-gray-300">{def.tiers[0].desc}</p>
-                  </>
-                )}
-                {/* Next tier hint */}
-                {nextTier && earnedTier && (
-                  <p className="text-[9px] text-shell-yellow-dark font-semibold mt-0.5">
-                    Próximo: {nextTier.name} ({nextTier.min - val} más)
+              {/* Badge info */}
+              <div className="text-center mt-1">
+                <p className={`text-xs font-bold leading-tight ${earnedTier ? 'text-shell-gray-800' : 'text-shell-gray-400'}`}>
+                  {earnedTier ? earnedTier.name : row.tiers[0].name}
+                </p>
+                <p className="text-[10px] text-shell-gray-400 mt-0.5">
+                  {earnedTier ? earnedTier.desc : row.tiers[0].desc}
+                </p>
+                {/* Progress to next */}
+                {nextTier && (
+                  <p className="text-[9px] font-semibold mt-1" style={{ color: '#D4A800' }}>
+                    {earnedTier ? 'Próximo: ' : 'Faltan: '}
+                    {nextTier.min - row.val} {row.key === 'volumePct' ? '%' : row.key === 'proposals' ? 'prop.' : row.key === 'visits' ? 'vis.' : 'cont.'}
+                    {' → '}{nextTier.name.split(' ')[0]}
                   </p>
                 )}
-                {nextTier && !earnedTier && (
-                  <p className="text-[9px] text-shell-gray-400 mt-0.5">
-                    Faltan {nextTier.min - val}
-                  </p>
+                {!nextTier && earnedTier && (
+                  <p className="text-[9px] font-bold text-shell-yellow-dark mt-1">✨ Máximo nivel</p>
                 )}
+              </div>
+
+              {/* Tier mini-track below each badge */}
+              <div className="flex gap-1 mt-0.5">
+                {row.tiers.map((t, i) => {
+                  const earned = row.val >= t.min;
+                  const colors = { bronze: '#CD7F32', silver: '#9EA3A8', gold: '#FBCE07' };
+                  return (
+                    <div
+                      key={t.tier}
+                      className="w-5 h-1.5 rounded-full transition-all"
+                      style={{ background: earned ? colors[t.tier] : '#E0E0E0' }}
+                      title={t.name}
+                    />
+                  );
+                })}
               </div>
             </div>
           );
@@ -214,30 +280,24 @@ function BadgesSection({ entry }) {
       </div>
 
       {/* Special badges */}
-      <div className="mt-5 pt-4 border-t border-shell-gray-100">
-        <p className="text-[10px] font-bold text-shell-gray-400 uppercase tracking-wide mb-3">Logros especiales</p>
+      <div className="border-t border-shell-gray-100 pt-4">
+        <p className="text-[10px] font-bold text-shell-gray-400 uppercase tracking-wider mb-3">Logros especiales</p>
         <div className="flex flex-wrap gap-2">
-          {[
-            { icon: '🌟', name: 'Top 5', desc: 'En el ranking', earned: true },
-            { icon: '📈', name: 'Crecimiento', desc: '+15% vs mes ant.', earned: true },
-            { icon: '🤝', name: 'Negociador', desc: '3+ ops en Negotiate', earned: entry.volumePct >= 80 },
-            { icon: '🏆', name: 'Campeón', desc: 'Posición #1', earned: false },
-            { icon: '💎', name: 'Diamante', desc: '1.500+ XP', earned: entry.total >= 1500 },
-          ].map(badge => (
+          {specialBadges.map(badge => (
             <div
               key={badge.name}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all duration-200 ${
                 badge.earned
-                  ? 'bg-shell-yellow-light border-shell-yellow text-shell-gray-800'
+                  ? 'bg-shell-yellow-light border-shell-yellow shadow-sm'
                   : 'bg-shell-gray-50 border-shell-gray-100 opacity-40'
               }`}
             >
-              <span className={badge.earned ? '' : 'grayscale'}>{badge.icon}</span>
+              <span className={`text-base ${badge.earned ? '' : 'grayscale'}`}>{badge.icon}</span>
               <div>
-                <p className="text-[11px] font-bold leading-none">{badge.name}</p>
+                <p className="text-[11px] font-bold text-shell-gray-800 leading-none">{badge.name}</p>
                 <p className="text-[9px] text-shell-gray-500">{badge.desc}</p>
               </div>
-              {badge.earned && <span className="text-[10px] text-shell-yellow-dark">✓</span>}
+              {badge.earned && <span className="text-[10px] text-shell-yellow-dark font-bold">✓</span>}
             </div>
           ))}
         </div>
