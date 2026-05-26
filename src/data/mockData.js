@@ -658,23 +658,65 @@ export const initialFiles = [
 // ─── CHAMPIONS DATA ───────────────────────────────────────────────────────────
 export const championsData = {
   monthlyPrize: {
-    title: 'Premio Mes de Mayo',
-    description: 'Actualización récord de oportunidades + 2 cierres confirmados',
+    title: 'Premio Mes de Mayo 2026',
+    description: 'Récord de propuestas enviadas + mayor volumen en cierre del trimestre',
     winner: 'exec-carlos',
-    prize: 'Experiencia VIP Gran Premio de Fórmula 1',
+    prize: 'Experiencia VIP Gran Premio de Fórmula 1 – Miami 2026',
+  },
+  // Incentive rates (USD per unit)
+  incentiveRates: {
+    proposals:  { rate: 25,   label: 'por propuesta enviada' },
+    visits:     { rate: 40,   label: 'por visita reportada' },
+    contacts:   { rate: 15,   label: 'por primer contacto' },
+    volumeBase: { rate: 2000, label: 'bono base por cumplimiento de volumen' },
   },
   categories: [
-    { key: 'updates', label: 'Actualizar oportunidades', maxPoints: 400, icon: 'refresh-cw' },
-    { key: 'tasks', label: 'Cerrar tareas', maxPoints: 300, icon: 'check-square' },
-    { key: 'spancop', label: 'Avanzar SPANCOP', maxPoints: 300, icon: 'trending-up' },
-    { key: 'commitments', label: 'Cumplir compromisos', maxPoints: 240, icon: 'shield-check' },
+    { key: 'proposals', label: 'Propuestas enviadas',   max: 400, unit: 'propuestas', icon: 'file-text',      color: '#FBCE07' },
+    { key: 'visits',    label: 'Visitas reportadas',    max: 350, unit: 'visitas',    icon: 'map-pin',         color: '#3B82F6' },
+    { key: 'contacts',  label: 'Primeros contactos',    max: 300, unit: 'contactos',  icon: 'phone-outgoing',  color: '#10B981' },
+    { key: 'volume',    label: 'Cumplimiento de volumen', max: 400, unit: '% meta',  icon: 'droplets',        color: '#DD1D21' },
   ],
   executives: [
-    { executiveId: 'exec-carlos', updates: 380, tasks: 280, spancop: 290, commitments: 230, total: 1240 },
-    { executiveId: 'exec-ana', updates: 310, tasks: 255, spancop: 280, commitments: 240, total: 1085 },
-    { executiveId: 'exec-diego', updates: 290, tasks: 240, spancop: 250, commitments: 200, total: 980 },
-    { executiveId: 'exec-paola', updates: 260, tasks: 220, spancop: 240, commitments: 190, total: 910 },
-    { executiveId: 'exec-martin', updates: 200, tasks: 190, spancop: 200, commitments: 170, total: 760 },
+    {
+      executiveId: 'exec-carlos',
+      proposals: 14, proposalsPts: 350,
+      visits: 8,     visitsPts: 320,
+      contacts: 18,  contactsPts: 270,
+      volumePct: 96, volumePts: 384,   volumeL: 42800,
+      total: 1324,
+    },
+    {
+      executiveId: 'exec-ana',
+      proposals: 12, proposalsPts: 300,
+      visits: 7,     visitsPts: 280,
+      contacts: 15,  contactsPts: 225,
+      volumePct: 88, volumePts: 352,   volumeL: 31200,
+      total: 1157,
+    },
+    {
+      executiveId: 'exec-diego',
+      proposals: 10, proposalsPts: 250,
+      visits: 9,     visitsPts: 315,
+      contacts: 14,  contactsPts: 210,
+      volumePct: 79, volumePts: 316,   volumeL: 28400,
+      total: 1091,
+    },
+    {
+      executiveId: 'exec-paola',
+      proposals: 9,  proposalsPts: 225,
+      visits: 6,     visitsPts: 240,
+      contacts: 12,  contactsPts: 180,
+      volumePct: 82, volumePts: 328,   volumeL: 24600,
+      total: 973,
+    },
+    {
+      executiveId: 'exec-martin',
+      proposals: 7,  proposalsPts: 175,
+      visits: 5,     visitsPts: 200,
+      contacts: 10,  contactsPts: 150,
+      volumePct: 68, volumePts: 272,   volumeL: 18900,
+      total: 797,
+    },
   ],
 };
 
