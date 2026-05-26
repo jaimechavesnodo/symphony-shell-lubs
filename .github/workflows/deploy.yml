@@ -1,50 +1,56 @@
-name: Deploy Symphony to GitHub Pages
+name: Deploy to nodo.host
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout código
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Instalar dependencias
         run: npm ci
 
-      - name: Build
+      - name: Build producción
         run: npm run build
 
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Configurar SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          path: './dist'
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Agregar host conocido
+        run: |
+          mkdir -p ~/.ssh
+          echo "76.13.106.71 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEm2hpb39YvO4Sf86T+3frKEMBet30okjXZYmfRrna0l" >> ~/.ssh/known_hosts
+
+      - name: Instalar rsync
+        run: sudo apt-get install -y rsync
+
+      - name: Desplegar al servidor
+        run: |
+          rsync -avz --delete \
+            dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/symphony-shell-lubs/
+
+      - name: Verificar despliegue
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://nodo.host/symphony-shell-lubs/)
+          echo "HTTP Status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Advertencia: el sitio puede estar inicializándose (status: $STATUS)"
+          else
+            echo "✅ Despliegue exitoso en https://nodo.host/symphony-shell-lubs/"
+          fi
