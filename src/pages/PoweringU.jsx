@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { BookOpen, CheckCircle, Clock, Lock, Star } from 'lucide-react';
 import { poweringUModules } from '../data/mockData';
+import { courseContent } from '../data/courseContent';
 import useAppStore from '../store/useAppStore';
+import CourseModal from '../components/ui/CourseModal';
 
 const categories = ['Todos', 'Productos Shell', 'SPANCOP', 'Venta consultiva', 'Objeciones', 'Marca personal'];
 const statusConfig = {
@@ -13,8 +15,9 @@ const statusConfig = {
 export default function PoweringU() {
   const { currentUser } = useAppStore();
   const [catFilter, setCatFilter] = useState('Todos');
+  const [selectedModule, setSelectedModule] = useState(null);
 
-  const filtered = poweringUModules.filter((m) => catFilter === 'Todos' || m.category === catFilter);
+  const filtered = poweringUModules.filter(m => catFilter === 'Todos' || m.category === catFilter);
 
   const completed = poweringUModules.filter(m => m.status === 'completado').length;
   const inProgress = poweringUModules.filter(m => m.status === 'en_progreso').length;
@@ -22,6 +25,12 @@ export default function PoweringU() {
     poweringUModules.filter(m => m.score).reduce((s, m) => s + m.score, 0) /
     poweringUModules.filter(m => m.score).length
   );
+
+  const openModule = (module) => {
+    if (module.status !== 'pendiente') {
+      setSelectedModule(module);
+    }
+  };
 
   return (
     <div className="page-container">
@@ -52,7 +61,6 @@ export default function PoweringU() {
               <div className="text-xs text-shell-gray-400">Promedio evaluaciones</div>
             </div>
           </div>
-          {/* Overall progress bar */}
           <div className="mt-4">
             <div className="flex items-center justify-between text-xs text-shell-gray-400 mb-1">
               <span>Progreso general</span>
@@ -70,7 +78,7 @@ export default function PoweringU() {
 
       {/* Category filters */}
       <div className="flex gap-2 flex-wrap mb-5">
-        {categories.map((c) => (
+        {categories.map(c => (
           <button
             key={c}
             onClick={() => setCatFilter(c)}
@@ -85,11 +93,12 @@ export default function PoweringU() {
 
       {/* Modules grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filtered.map((module) => {
+        {filtered.map(module => {
           const cfg = statusConfig[module.status];
           const StatusIcon = cfg.icon;
+          const hasCourseContent = !!courseContent[module.id];
           return (
-            <div key={module.id} className={`card p-4 hover:shadow-card-hover transition-all duration-200 ${module.status === 'pendiente' ? 'opacity-75' : ''}`}>
+            <div key={module.id} className={`card p-4 hover:shadow-card-hover transition-all duration-200 ${module.status === 'pendiente' ? 'opacity-70' : ''}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className={`w-10 h-10 rounded-xl ${cfg.bg} flex items-center justify-center shrink-0`}>
                   <StatusIcon size={18} className={cfg.text} />
@@ -117,22 +126,35 @@ export default function PoweringU() {
                 </div>
               )}
               {module.score && (
-                <div className="flex items-center gap-1 text-xs text-amber-500">
+                <div className="flex items-center gap-1 text-xs text-amber-500 mb-2">
                   <Star size={12} fill="currentColor" />
                   <span className="font-bold">{module.score}/100</span>
                 </div>
               )}
-              <button className={`w-full mt-3 text-xs font-semibold px-3 py-2 rounded-lg transition-colors ${
-                module.status === 'completado' ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                : module.status === 'pendiente' ? 'bg-shell-gray-100 text-shell-gray-400 cursor-not-allowed'
-                : 'bg-shell-yellow text-shell-gray-800 hover:bg-shell-yellow-mid'
-              }`}>
-                {module.status === 'completado' ? 'Repasar' : module.status === 'en_progreso' ? 'Continuar' : 'Próximamente'}
+              <button
+                onClick={() => openModule(module)}
+                className={`w-full mt-1 text-xs font-semibold px-3 py-2.5 rounded-lg transition-all ${
+                  module.status === 'completado'
+                    ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                    : module.status === 'pendiente'
+                    ? 'bg-shell-gray-100 text-shell-gray-400 cursor-not-allowed'
+                    : 'bg-shell-yellow text-shell-gray-800 hover:bg-shell-yellow-mid'
+                }`}
+              >
+                {module.status === 'completado' ? '📖 Repasar' : module.status === 'en_progreso' ? '▶ Continuar' : '🔒 Próximamente'}
               </button>
             </div>
           );
         })}
       </div>
+
+      {/* Course Modal */}
+      <CourseModal
+        isOpen={!!selectedModule}
+        onClose={() => setSelectedModule(null)}
+        module={selectedModule}
+        content={selectedModule ? courseContent[selectedModule.id] : null}
+      />
     </div>
   );
 }
