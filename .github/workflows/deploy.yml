@@ -45,10 +45,16 @@ jobs:
             dist/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/symphony-shell-lubs/
 
-      - name: Copiar y ejecutar script de nginx en servidor
+      - name: Copiar script de nginx con rsync
         run: |
-          scp .github/scripts/setup-nginx.sh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/setup-nginx.sh
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "chmod +x /tmp/setup-nginx.sh && bash /tmp/setup-nginx.sh"
+          rsync -avz .github/scripts/setup-nginx.sh \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/setup-nginx.sh
+
+      - name: Ejecutar configuración de nginx en servidor
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "bash /tmp/setup-nginx.sh"
 
       - name: Verificar despliegue
         run: |
