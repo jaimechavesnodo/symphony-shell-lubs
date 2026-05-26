@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Filter } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import SpancopBadge from '../components/ui/SpancopBadge';
+
+const INDUSTRIES = ['Todas', 'Minería', 'Transporte', 'Agro', 'Pesca', 'Construcción', 'Industria', 'Aviación', 'Distribución'];
 
 const stages = [
   { key: 'Suspect', color: 'bg-shell-gray-50', header: 'bg-shell-gray-100', headerText: 'text-shell-gray-600', border: 'border-shell-gray-200' },
@@ -16,11 +20,20 @@ const industryEmojis = { Minería: '⛏️', Transporte: '🚛', Agro: '🌾', P
 const riskColors = { Alto: 'text-shell-red bg-red-50', Medio: 'text-amber-600 bg-amber-50', Bajo: 'text-green-600 bg-green-50' };
 
 export default function SPANCOP() {
-  const { opportunities, companies, currentUser } = useAppStore();
+  const { opportunities, companies, executives, currentUser } = useAppStore();
   const navigate = useNavigate();
   const isAdmin = currentUser?.role === 'admin';
 
-  const myOpps = isAdmin ? opportunities : opportunities.filter((o) => o.executiveId === currentUser?.executiveId);
+  const [filterIndustry, setFilterIndustry] = useState('Todas');
+  const [filterExecutive, setFilterExecutive] = useState('Todos');
+
+  const baseOpps = isAdmin ? opportunities : opportunities.filter(o => o.executiveId === currentUser?.executiveId);
+  const myOpps = baseOpps.filter(o => {
+    if (filterIndustry !== 'Todas' && o.industry !== filterIndustry) return false;
+    if (isAdmin && filterExecutive !== 'Todos' && o.executiveId !== filterExecutive) return false;
+    return true;
+  });
+
   const companyName = (id) => companies.find((c) => c.id === id)?.name?.split(' ').slice(0, 2).join(' ') || id;
 
   // KPIs
@@ -38,9 +51,41 @@ export default function SPANCOP() {
 
   return (
     <div className="p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-shell-gray-800">SPANCOP – Embudo Comercial</h1>
+      {/* Header + Filters */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div>
+          <h1 className="text-xl font-bold text-shell-gray-800">SPANCOP – Embudo Comercial</h1>
+          <p className="text-sm text-shell-gray-400 mt-1">Vista Kanban · {myOpps.length} oportunidades</p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter size={14} className="text-shell-gray-400" />
+          <select
+            value={filterIndustry}
+            onChange={e => setFilterIndustry(e.target.value)}
+            className="text-xs border border-shell-gray-200 rounded-lg px-3 py-1.5 bg-white text-shell-gray-700 focus:outline-none focus:ring-2 focus:ring-shell-yellow"
+          >
+            {INDUSTRIES.map(i => <option key={i}>{i}</option>)}
+          </select>
+          {isAdmin && (
+            <select
+              value={filterExecutive}
+              onChange={e => setFilterExecutive(e.target.value)}
+              className="text-xs border border-shell-gray-200 rounded-lg px-3 py-1.5 bg-white text-shell-gray-700 focus:outline-none focus:ring-2 focus:ring-shell-yellow"
+            >
+              <option value="Todos">Todos los ejecutivos</option>
+              {executives.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+            </select>
+          )}
+          {(filterIndustry !== 'Todas' || filterExecutive !== 'Todos') && (
+            <button onClick={() => { setFilterIndustry('Todas'); setFilterExecutive('Todos'); }} className="text-[10px] text-shell-red font-semibold hover:underline">
+              Limpiar
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Hidden div to keep old structure */}
+      <div className="hidden">
         <p className="text-sm text-shell-gray-400 mt-1">Vista Kanban de todas las oportunidades en pipeline</p>
       </div>
 

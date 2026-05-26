@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Clock, TrendingDown, PhoneMissed, FileWarning, BarChart2, UserCheck, ListChecks, ShieldAlert, RefreshCw, CheckCircle, ChevronRight } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import AlertDetailModal from '../components/ui/AlertDetailModal';
 
 const iconMap = {
   'phone-missed': PhoneMissed,
@@ -26,6 +27,7 @@ export default function Alerts() {
   const { alerts, dismissAlert, opportunities } = useAppStore();
   const navigate = useNavigate();
   const [filter, setFilter] = useState('Todas');
+  const [selectedAlert, setSelectedAlert] = useState(null);
 
   const severities = ['Todas', 'Alta', 'Media', 'Baja'];
 
@@ -113,10 +115,16 @@ export default function Alerts() {
                     </div>
                     <p className="text-xs text-shell-gray-600 mt-2 leading-relaxed">{alert.description}</p>
                     <div className="flex items-center gap-2 mt-3">
+                      <button
+                        onClick={() => setSelectedAlert(alert)}
+                        className="text-xs text-shell-yellow-dark font-semibold flex items-center gap-0.5 hover:underline"
+                      >
+                        Ver detalle <ChevronRight size={12} />
+                      </button>
                       {opp && (
                         <button
                           onClick={() => navigate(`/opportunities/${opp.id}`)}
-                          className="text-xs text-shell-yellow-dark font-semibold flex items-center gap-0.5 hover:underline"
+                          className="text-xs text-shell-gray-400 font-semibold flex items-center gap-0.5 hover:underline"
                         >
                           Ver oportunidad <ChevronRight size={12} />
                         </button>
@@ -137,6 +145,13 @@ export default function Alerts() {
           );
         })}
       </div>
+
+      {selectedAlert && (
+        <AlertDetailModal
+          alert={selectedAlert}
+          onClose={() => setSelectedAlert(null)}
+        />
+      )}
     </div>
   );
 }
