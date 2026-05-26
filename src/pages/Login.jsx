@@ -10,7 +10,7 @@ const roles = [
     key: 'admin',
     title: 'Gerente Comercial',
     name: 'Carlos Mendoza',
-    description: 'Vista completa: todos los ejecutivos, dashboard consolidado, programa de incentivos y capacitaciones.',
+    description: 'Vista completa: todos los ejecutivos, dashboard consolidado, programa de incentivos.',
     icon: ShieldCheck,
     badge: 'Admin',
     badgeColor: 'bg-shell-red text-white',
@@ -41,34 +41,50 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
 
-      {/* ─── LEFT PANEL — Form ─────────────────────────────────────────────── */}
-      <div className="flex flex-col md:w-[42%] bg-white">
-        {/* Logo */}
-        <div className="px-8 pt-8 pb-4 flex items-center gap-3">
-          <img src={`${BASE}shell-logo.png`} alt="Shell" className="w-10 h-10 object-contain" />
-          <div>
-            <div className="text-xl font-bold text-shell-gray-800 leading-none">Symphony</div>
-            <div className="text-[11px] text-shell-gray-400 mt-0.5">Commercial Intelligence in Motion</div>
+      {/* ─── LEFT PANEL ────────────────────────────────────────────────────── */}
+      <div className="flex flex-col md:w-[38%] bg-white min-h-screen">
+
+        {/* Branding header — Shell logo + Symphony title */}
+        <div className="px-8 pt-8 pb-5">
+          <div className="flex items-center gap-3 mb-4">
+            <img src={`${BASE}shell-logo.png`} alt="Shell" className="w-12 h-12 object-contain shrink-0" />
+            <div>
+              <div
+                className="font-bold leading-none"
+                style={{
+                  fontSize: 28,
+                  background: 'linear-gradient(135deg, #D4A800 0%, #FBCE07 50%, #DD1D21 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                Symphony
+              </div>
+              <div className="text-[11px] text-shell-gray-400 font-medium mt-0.5 tracking-wide">
+                Commercial Intelligence in Motion
+              </div>
+            </div>
           </div>
+          <div className="h-0.5 w-10 bg-shell-yellow" />
         </div>
 
-        <div className="mx-8 h-0.5 w-12 bg-shell-yellow mb-6" />
-
+        {/* Form content */}
         <div className="flex-1 flex flex-col px-8 pb-6">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-shell-gray-800 leading-tight">
+          <div className="mb-5">
+            <h1 className="text-2xl font-bold text-shell-gray-800 leading-tight">
               Bienvenido a <span className="text-shell-red">Symphony</span>
             </h1>
-            <p className="text-shell-gray-500 text-sm mt-2 leading-relaxed max-w-xs">
+            <p className="text-shell-gray-500 text-sm mt-1.5 leading-relaxed">
               La plataforma de inteligencia comercial que impulsa mejores decisiones y resultados.
             </p>
           </div>
 
-          <p className="text-[11px] font-bold text-shell-gray-400 uppercase tracking-wider mb-4">
+          <p className="text-[11px] font-bold text-shell-gray-400 uppercase tracking-wider mb-3">
             Selecciona tu perfil para ingresar
           </p>
 
-          <div className="space-y-3 mb-6">
+          <div className="space-y-3 mb-5">
             {roles.map((role) => {
               const Icon = role.icon;
               const isSelected = selected === role.key;
@@ -83,8 +99,8 @@ export default function Login() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-shell-yellow' : 'bg-shell-gray-100'}`}>
-                      <Icon size={18} className={isSelected ? 'text-shell-gray-800' : 'text-shell-gray-500'} />
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-shell-yellow' : 'bg-shell-gray-100'}`}>
+                      <Icon size={16} className={isSelected ? 'text-shell-gray-800' : 'text-shell-gray-500'} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
@@ -116,14 +132,20 @@ export default function Login() {
             <ChevronRight size={18} />
           </button>
 
-          <div className="mt-5 flex items-start gap-2 text-[11px] text-shell-gray-400">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 mt-0.5">
+          <div className="mt-4 flex items-start gap-2 text-[11px] text-shell-gray-400">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 mt-0.5">
               <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span>Tu información está segura con nosotros. <span className="text-shell-red font-medium cursor-pointer">Conoce más sobre seguridad y privacidad →</span></span>
+            <span>
+              Tu información está segura con nosotros.{' '}
+              <span className="text-shell-red font-medium cursor-pointer">
+                Conoce más sobre seguridad y privacidad →
+              </span>
+            </span>
           </div>
         </div>
 
+        {/* Footer */}
         <div className="px-8 py-4 border-t border-shell-gray-100">
           <p className="text-[11px] text-shell-gray-400 text-center">
             Powered by NODO · Prototipo v1.0 · 2026
@@ -131,67 +153,17 @@ export default function Login() {
         </div>
       </div>
 
-      {/* ─── RIGHT PANEL — Hero image ───────────────────────────────────────── */}
+      {/* ─── RIGHT PANEL — Full image, no overlay text ─────────────────────── */}
       <div
-        className="hidden md:block md:w-[58%] relative overflow-hidden"
+        className="hidden md:block md:w-[62%] relative"
         style={{
           backgroundImage: `url(${BASE}login-bg.png)`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center top',
+          backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
+          minHeight: '100vh',
         }}
-      >
-        {/* Subtle dark overlay for logo/text legibility at top */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.0) 60%, rgba(0,0,0,0.25) 100%)',
-          }}
-        />
-
-        {/* Shell energy lines SVG overlay */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="eg1" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FBCE07" stopOpacity="0" />
-              <stop offset="45%" stopColor="#FBCE07" stopOpacity="0.75" />
-              <stop offset="100%" stopColor="#FBCE07" stopOpacity="0.1" />
-            </linearGradient>
-            <linearGradient id="eg2" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FBCE07" stopOpacity="0" />
-              <stop offset="55%" stopColor="#FBCE07" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#FBCE07" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d="M-60 500 Q180 330 520 410 Q710 455 870 310" stroke="url(#eg1)" strokeWidth="3" fill="none" />
-          <path d="M-60 530 Q200 365 540 438 Q720 478 870 340" stroke="url(#eg1)" strokeWidth="2" fill="none" />
-          <path d="M-60 555 Q220 395 550 462 Q730 500 870 365" stroke="url(#eg2)" strokeWidth="2.5" fill="none" />
-          <path d="M-60 575 Q200 420 510 480 Q710 518 870 388" stroke="url(#eg2)" strokeWidth="1.5" fill="none" />
-          <circle cx="510" cy="428" r="4" fill="#FBCE07" opacity="0.65" />
-          <circle cx="548" cy="445" r="2.5" fill="#FBCE07" opacity="0.45" />
-          <circle cx="485" cy="415" r="2" fill="#FBCE07" opacity="0.35" />
-        </svg>
-
-        {/* Shell logo + title top center */}
-        <div className="relative flex flex-col items-center pt-8 px-8">
-          <img src={`${BASE}shell-logo.png`} alt="Shell" className="w-16 h-16 object-contain drop-shadow-lg mb-3" />
-          <h2
-            className="font-bold leading-none tracking-tight text-center drop-shadow-lg"
-            style={{
-              fontSize: 'clamp(44px, 6vw, 72px)',
-              background: 'linear-gradient(135deg, #FBCE07 0%, #FFE44D 55%, #DD1D21 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            Symphony
-          </h2>
-          <p className="text-white/80 text-xs font-light tracking-widest mt-1.5 uppercase drop-shadow">
-            Commercial Intelligence in Motion
-          </p>
-        </div>
-      </div>
+      />
     </div>
   );
 }
