@@ -39,18 +39,66 @@ jobs:
       - name: Instalar rsync
         run: sudo apt-get install -y rsync
 
-      - name: Desplegar al servidor
+      - name: Desplegar archivos al servidor
         run: |
           rsync -avz --delete \
             dist/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/symphony-shell-lubs/
 
+      - name: Configurar ruta nginx en servidor
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'SSHEOF'
+            set -e
+
+            # Encontrar el archivo nginx que contiene la config de once-data-hub
+            CONFIG=$(sudo grep -rl "once-data-hub" /etc/nginx/ 2>/dev/null | grep -v "\.bak\|\.swp" | head -1)
+            echo "Archivo nginx detectado: $CONFIG"
+
+            if [ -z "$CONFIG" ]; then
+              echo "ERROR: No se encontró el archivo nginx con la configuración existente"
+              exit 1
+            fi
+
+            # Si ya está configurado, no hacer nada
+            if sudo grep -q "symphony-shell-lubs" "$CONFIG"; then
+              echo "Ruta /symphony-shell-lubs/ ya existe en nginx — sin cambios"
+            else
+              echo "Agregando location /symphony-shell-lubs/ al nginx..."
+
+              # Backup del config original
+              sudo cp "$CONFIG" "${CONFIG}.bak.$(date +%Y%m%d%H%M%S)"
+
+              # Insertar el nuevo location block antes del catch-all "location = /"
+              sudo awk '
+                /location = \// && !done {
+                  print "    location /symphony-shell-lubs/ {"
+                  print "        alias /var/www/symphony-shell-lubs/;"
+                  print "        try_files $uri $uri/ /symphony-shell-lubs/index.html;"
+                  print "    }"
+                  print ""
+                  done=1
+                }
+                { print }
+              ' "$CONFIG" > /tmp/nginx_symphony.tmp
+
+              sudo cp /tmp/nginx_symphony.tmp "$CONFIG"
+              echo "Bloque de nginx agregado correctamente"
+            fi
+
+            # Verificar config y recargar nginx
+            sudo nginx -t
+            sudo nginx -s reload
+            echo "Nginx recargado"
+          SSHEOF
+
       - name: Verificar despliegue
         run: |
+          sleep 3
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://nodo.host/symphony-shell-lubs/)
           echo "HTTP Status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "Advertencia: el sitio puede estar inicializándose (status: $STATUS)"
-          else
+          if [ "$STATUS" = "200" ]; then
             echo "✅ Despliegue exitoso en https://nodo.host/symphony-shell-lubs/"
+          else
+            echo "⚠️  Status $STATUS — revisar logs de nginx en el servidor"
+            exit 1
           fi
