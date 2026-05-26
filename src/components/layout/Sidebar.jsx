@@ -4,6 +4,7 @@ import {
   Mail, FolderOpen, BookOpen, Trophy, Settings, LogOut
 } from 'lucide-react';
 import useAppStore from '../../store/useAppStore';
+const BASE = import.meta.env.BASE_URL;
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Inicio' },
@@ -32,7 +33,7 @@ export default function Sidebar() {
       <div className="px-4 py-5 border-b border-shell-gray-100">
         <div className="flex items-center gap-2.5">
           <img
-            src="/shell-logo.png"
+            src={`${BASE}shell-logo.png`}
             alt="Shell"
             className="w-9 h-9 object-contain shrink-0"
             onError={(e) => {
@@ -81,7 +82,7 @@ export default function Sidebar() {
           className="w-full bg-shell-yellow hover:bg-shell-yellow-mid text-shell-gray-800 font-semibold text-sm px-3 py-2.5 rounded-xl flex items-center gap-2 transition-colors duration-150"
         >
           <img
-            src="/b2buddy-avatar.png"
+            src={`${BASE}b2buddy-avatar.png`}
             alt="B2Buddy"
             className="w-9 h-9 object-contain shrink-0 drop-shadow-sm"
           />

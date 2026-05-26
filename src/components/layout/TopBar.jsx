@@ -1,6 +1,7 @@
 import { Search, Bell, ChevronDown, Mic } from 'lucide-react';
 import { useState } from 'react';
 import useAppStore from '../../store/useAppStore';
+const BASE = import.meta.env.BASE_URL;
 
 export default function TopBar() {
   const { currentUser, notificationCount, openB2Buddy } = useAppStore();
@@ -10,7 +11,7 @@ export default function TopBar() {
     <header className="bg-white border-b border-shell-gray-100 sticky top-0 z-30 h-14 flex items-center px-4 md:px-6 gap-4">
       {/* Mobile logo */}
       <div className="flex md:hidden items-center gap-2 mr-2">
-        <img src="/shell-logo.png" alt="Shell" className="w-7 h-7 object-contain" />
+        <img src={`${BASE}shell-logo.png`} alt="Shell" className="w-7 h-7 object-contain" />
         <span className="font-bold text-shell-gray-800 text-base">Symphony</span>
       </div>
 
